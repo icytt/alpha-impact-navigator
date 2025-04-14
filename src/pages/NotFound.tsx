@@ -1,5 +1,9 @@
+
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { Button } from "@/components/ui/button";
 
 const NotFound = () => {
   const location = useLocation();
@@ -12,14 +16,44 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Return to Home
-        </a>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      
+      <div className="flex-1 flex items-center justify-center bg-gray-50 py-20">
+        <div className="text-center max-w-xl px-4">
+          <div className="mb-8">
+            <div className="inline-block p-6 rounded-full bg-gray-100">
+              <svg className="h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+              </svg>
+            </div>
+          </div>
+          
+          <h1 className="text-4xl font-bold mb-4 text-gray-900">Page Not Found</h1>
+          <p className="text-xl text-gray-600 mb-8">
+            Sorry, we couldn't find the page you're looking for. It might have been moved or doesn't exist.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" asChild>
+              <a href="/" className="bg-leaf hover:bg-leaf-dark text-white">
+                Return Home
+              </a>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <a href="/opportunities" className="border-leaf text-leaf hover:bg-leaf/10">
+                View Opportunities
+              </a>
+            </Button>
+          </div>
+          
+          <p className="mt-12 text-gray-500">
+            Need help? <a href="/contact" className="text-leaf hover:underline">Contact our support team</a>
+          </p>
+        </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };

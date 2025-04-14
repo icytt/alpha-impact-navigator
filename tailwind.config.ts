@@ -32,6 +32,29 @@ export default {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'
 				},
+				green: {
+					50: '#f0fdf4',
+					100: '#dcfce7',
+					200: '#bbf7d0',
+					300: '#86efac',
+					400: '#4ade80',
+					500: '#22c55e',
+					600: '#16a34a',
+					700: '#15803d',
+					800: '#166534',
+					900: '#14532d',
+					950: '#052e16',
+				},
+				leaf: {
+					light: '#5cb85c',
+					DEFAULT: '#3e8e41',
+					dark: '#2c6a2c',
+				},
+				ocean: {
+					light: '#6bb6ff',
+					DEFAULT: '#3498db',
+					dark: '#2980b9',
+				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
 					foreground: 'hsl(var(--destructive-foreground))'
