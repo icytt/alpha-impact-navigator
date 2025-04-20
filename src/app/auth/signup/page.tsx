@@ -22,6 +22,8 @@ export default function SignUpPage() {
     const name = formData.get("name") as string;
 
     try {
+      console.log("Attempting to sign up with:", { email, name }); // Log attempt
+      
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -29,14 +31,17 @@ export default function SignUpPage() {
       });
 
       const data = await response.json();
+      console.log("Signup response:", data); // Log response
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to sign up");
+        throw new Error(data.error || "Failed to sign up");
       }
 
       // Successful signup
+      console.log("Signup successful, redirecting to signin");
       router.push("/auth/signin"); // Redirect to signin page
     } catch (err) {
+      console.error("Signup error:", err); // Log error
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);
@@ -108,6 +113,7 @@ export default function SignUpPage() {
                 className="relative block w-full"
                 placeholder="Password"
                 disabled={isLoading}
+                minLength={6}
               />
             </div>
           </div>
