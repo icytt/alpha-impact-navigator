@@ -21,8 +21,12 @@ export function Header() {
         </nav>
         
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" className="hidden md:flex">Log In</Button>
-          <Button className="bg-leaf hover:bg-leaf-dark text-white">Sign Up</Button>
+          <Button variant="ghost" className="hidden md:flex" asChild>
+            <Link href="/auth/signin">Log In</Link>
+          </Button>
+          <Button className="bg-leaf hover:bg-leaf-dark text-white" asChild>
+            <Link href="/auth/signup">Sign Up</Link>
+          </Button>
         </div>
       </div>
     </header>

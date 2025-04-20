@@ -1,39 +1,47 @@
 import { db } from "@/db";
 import { investments } from "@/db/schema";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 const sampleInvestments = [
   {
     title: "Green Energy Fund",
-    description: "Invest in a portfolio of wind, solar, and hydro projects with established track records of consistent returns.",
-    category: "Renewable Energy",
+    description: "Investment in large-scale solar energy production",
+    category: "renewable energy",
     amount: "100.00",
     imageUrl: "/images/green-energy.jpg",
-    expectedReturn: "12.50",
-    riskLevel: "moderate",
+    expectedReturn: "8.50",
+    riskLevel: "moderate"
   },
   {
-    title: "Sustainable Agriculture",
-    description: "Support regenerative farming practices that improve soil health while producing nutritious organic food.",
-    category: "Food & Agriculture",
+    title: "Sustainable Agriculture Fund",
+    description: "Supporting eco-friendly farming practices",
+    category: "food & agriculture",
     amount: "250.00",
     imageUrl: "/images/agriculture.jpg",
-    expectedReturn: "15.00",
-    riskLevel: "moderate-high",
+    expectedReturn: "7.20",
+    riskLevel: "low"
   },
   {
-    title: "Clean Water Initiative",
-    description: "Fund innovative water purification technologies bringing clean water to underserved communities worldwide.",
-    category: "Water Technology",
+    title: "Water Purification Technology",
+    description: "Clean water solutions for developing regions",
+    category: "water technology",
     amount: "150.00",
     imageUrl: "/images/water.jpg",
-    expectedReturn: "10.00",
-    riskLevel: "low",
-  },
+    expectedReturn: "9.00",
+    riskLevel: "moderate"
+  }
 ];
 
 export async function GET() {
   try {
+    // Verify authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+
     // Check if we have any investments
     let allInvestments = await db.query.investments.findMany();
     console.log('Current investments:', allInvestments);
@@ -42,9 +50,9 @@ export async function GET() {
     if (allInvestments.length === 0) {
       console.log('No investments found, adding sample investments');
       try {
-        await db.insert(investments).values(sampleInvestments);
-        console.log('Sample investments added successfully');
-        allInvestments = await db.query.investments.findMany();
+        const inserted = await db.insert(investments).values(sampleInvestments).returning();
+        console.log('Sample investments added successfully:', inserted);
+        allInvestments = inserted;
       } catch (insertError) {
         console.error('Error inserting sample investments:', insertError);
         throw insertError;

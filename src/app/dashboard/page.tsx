@@ -71,40 +71,6 @@ const PLACEHOLDER_IMAGES = {
   'default': '/images/green-energy.jpg',
 };
 
-// Define the initial investments outside of the component
-const initialInvestments: Investment[] = [
-  {
-    id: 1,
-    title: "Green Energy Fund",
-    description: "Investment in large-scale solar energy production",
-    category: "renewable energy",
-    amount: "100.00",
-    imageUrl: "/images/green-energy.jpg",
-    expectedReturn: 8.5,
-    riskLevel: "moderate"
-  },
-  {
-    id: 2,
-    title: "Sustainable Agriculture Fund",
-    description: "Supporting eco-friendly farming practices",
-    category: "food & agriculture",
-    amount: "250.00",
-    imageUrl: "/images/agriculture.jpg",
-    expectedReturn: 7.2,
-    riskLevel: "low"
-  },
-  {
-    id: 3,
-    title: "Water Purification Technology",
-    description: "Clean water solutions for developing regions",
-    category: "water technology",
-    amount: "150.00",
-    imageUrl: "/images/water.jpg",
-    expectedReturn: 9.0,
-    riskLevel: "moderate"
-  }
-];
-
 export default function DashboardPage() {
   const { data: session, status } = useSession({
     required: true,
@@ -114,7 +80,7 @@ export default function DashboardPage() {
     },
   });
   const router = useRouter();
-  const [investments, setInvestments] = useState<Investment[]>(initialInvestments);
+  const [investments, setInvestments] = useState<Investment[]>([]);
   const [userInvestments, setUserInvestments] = useState<UserInvestment[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedInvestment, setSelectedInvestment] = useState<Investment | null>(null);
@@ -158,16 +124,15 @@ export default function DashboardPage() {
       return;
     }
     
-    if (!session) {
-      console.log("No session, redirecting...");
+    if (!session?.user) {
+      console.log("No session, redirecting to signin...");
       router.push("/auth/signin");
       return;
     }
 
-    if (session?.user) {
-      console.log("User is authenticated:", session.user);
-      setLoading(false);
-    }
+    setLoading(false);
+    // Fetch data only when we're sure we have a session
+    fetchData();
   }, [status, session, router]);
 
   const calculateMonthlyGrowth = (investments: UserInvestment[]) => {
@@ -285,17 +250,19 @@ export default function DashboardPage() {
     try {
       console.log("Fetching user investments with session:", session);
       const response = await fetch('/api/user-investments', {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
+        credentials: 'same-origin',
       });
 
       if (!response.ok) {
         const data = await response.json();
         console.log("User investments fetch failed:", data);
-        if (data.error === "Not authenticated") {
-          router.push('/auth/signin');
+        if (response.status === 401) {
+          console.log("Session expired or invalid, redirecting to signin");
+          router.replace('/auth/signin');
           return;
         }
         throw new Error(data.error || 'Failed to fetch investments');
@@ -304,59 +271,38 @@ export default function DashboardPage() {
       const data = await response.json();
       console.log("Fetched user investments:", data);
       setUserInvestments(data);
-      
-      // Debug logs for impact calculation
-      console.log("Starting impact calculation with investments:", data);
-      
-      const totalValue = data.reduce((sum: number, inv: UserInvestment) => 
-        sum + Number(inv.amount), 0);
-      console.log("Total investment value:", totalValue);
-      
       calculateImpactMetrics(data);
-      
-      // Log the calculated metrics
-      console.log("Calculated metrics:", metrics);
-      console.log("Calculated impact metrics:", impactMetrics);
 
-      // Calculate portfolio statistics
-      setPortfolioStats({
-        totalValue,
-        numberOfInvestments: data.length,
-        impactScore: impactMetrics.total
-      });
-      
-      console.log("Updated portfolio stats:", {
-        totalValue,
-        numberOfInvestments: data.length,
-        impactScore: impactMetrics.total
-      });
     } catch (error) {
       console.error('Error fetching investments:', error);
       toast.error('Failed to fetch investments');
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch available investments
-        const investmentsResponse = await fetch('/api/investments');
-        if (investmentsResponse.ok) {
-          const investmentsData = await investmentsResponse.json();
-          setInvestments(investmentsData);
-        }
-        
-        // Fetch user investments
-        await fetchUserInvestments();
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      // Fetch available investments
+      const investmentsResponse = await fetch('/api/investments', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin',
+      });
 
-    fetchData();
-  }, []);
+      if (investmentsResponse.ok) {
+        const investmentsData = await investmentsResponse.json();
+        setInvestments(investmentsData);
+      }
+      
+      // Fetch user investments
+      await fetchUserInvestments();
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleLogout = () => {
     signOut({ callbackUrl: '/' });
@@ -372,17 +318,17 @@ export default function DashboardPage() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'same-origin',
         body: JSON.stringify({
           investmentId: selectedInvestment.id,
           amount: investmentAmount,
         }),
-        credentials: 'include',
       });
 
       if (!response.ok) {
         const data = await response.json();
-        if (data.error === "Not authenticated") {
-          router.push('/auth/signin');
+        if (response.status === 401) {
+          router.replace('/auth/signin');
         } else {
           toast.error(data.error || 'Failed to make investment');
         }

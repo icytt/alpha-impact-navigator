@@ -25,14 +25,24 @@ export default function SignInPage() {
         redirect: false,
       });
 
-      if (result?.error) {
+      if (!result) {
+        setError("An unexpected error occurred");
+        setIsLoading(false);
+        return;
+      }
+
+      if (result.error) {
         setError("Invalid email or password");
-      } else {
-        router.push("/dashboard");
+        setIsLoading(false);
+        return;
+      }
+
+      if (result.ok) {
+        window.location.href = "/dashboard";
       }
     } catch (error) {
+      console.error("Sign in error:", error);
       setError("An error occurred. Please try again.");
-    } finally {
       setIsLoading(false);
     }
   };
@@ -57,6 +67,7 @@ export default function SignInPage() {
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
               />
             </div>
             <div>
@@ -69,6 +80,7 @@ export default function SignInPage() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
               />
             </div>
           </div>

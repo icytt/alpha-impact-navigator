@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { userInvestments, investments } from "@/db/schema";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 
 export async function GET() {
