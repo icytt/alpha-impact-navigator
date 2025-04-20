@@ -1,19 +1,19 @@
-
-import { useLocation } from "react-router-dom";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const NotFound = () => {
-  const location = useLocation();
+  const router = useRouter();
 
   useEffect(() => {
     console.error(
       "404 Error: User attempted to access non-existent route:",
-      location.pathname
+      router.asPath
     );
-  }, [location.pathname]);
+  }, [router.asPath]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -36,19 +36,19 @@ const NotFound = () => {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" asChild>
-              <a href="/" className="bg-leaf hover:bg-leaf-dark text-white">
+              <Link href="/" className="bg-leaf hover:bg-leaf-dark text-white">
                 Return Home
-              </a>
+              </Link>
             </Button>
             <Button variant="outline" size="lg" asChild>
-              <a href="/opportunities" className="border-leaf text-leaf hover:bg-leaf/10">
+              <Link href="/opportunities" className="border-leaf text-leaf hover:bg-leaf/10">
                 View Opportunities
-              </a>
+              </Link>
             </Button>
           </div>
           
           <p className="mt-12 text-gray-500">
-            Need help? <a href="/contact" className="text-leaf hover:underline">Contact our support team</a>
+            Need help? <Link href="/contact" className="text-leaf hover:underline">Contact our support team</Link>
           </p>
         </div>
       </div>
