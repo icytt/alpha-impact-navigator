@@ -1,19 +1,21 @@
-import { useRouter } from "next/router";
+'use client';
+
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-const NotFound = () => {
-  const router = useRouter();
+export default function NotFound() {
+  const pathname = usePathname();
 
   useEffect(() => {
     console.error(
       "404 Error: User attempted to access non-existent route:",
-      router.asPath
+      pathname
     );
-  }, [router.asPath]);
+  }, [pathname]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -56,6 +58,4 @@ const NotFound = () => {
       <Footer />
     </div>
   );
-};
-
-export default NotFound;
+} 
