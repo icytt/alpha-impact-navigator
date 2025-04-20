@@ -1,69 +1,65 @@
+"use client"
 
-import { Link } from "react-router-dom";
+import Link from 'next/link'
 
 export function Footer() {
   return (
-    <footer className="bg-gray-50 pt-16 pb-8 border-t border-gray-200">
-      <div className="container">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+    <footer className="bg-[#f6fbf8] border-t border-gray-200 pt-16 pb-8 mt-24 rounded-b-3xl">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-10">
+          {/* Brand & Social */}
           <div>
-            <h3 className="font-bold text-gray-900 mb-4">GreenAlpha</h3>
-            <p className="text-gray-600 mb-4">Empowering you to invest in a sustainable future while tracking your environmental and social impact.</p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-leaf-dark">
-                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd"></path>
-                </svg>
+            <div className="font-bold text-xl mb-4">GreenAlpha</div>
+            <p className="text-gray-600 mb-6">Empowering you to invest in a sustainable future while tracking your environmental and social impact.</p>
+            <div className="flex gap-4">
+              <a href="#" aria-label="Facebook" className="text-gray-400 hover:text-[#4CAF50]">
+                <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.877v-6.987h-2.54v-2.89h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.242 0-1.632.771-1.632 1.562v1.875h2.773l-.443 2.89h-2.33v6.987C18.343 21.128 22 16.991 22 12z"/></svg>
               </a>
-              <a href="#" className="text-gray-400 hover:text-leaf-dark">
-                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
-                </svg>
+              <a href="#" aria-label="Twitter" className="text-gray-400 hover:text-[#4CAF50]">
+                <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M22.46 6c-.77.35-1.6.59-2.47.69a4.3 4.3 0 0 0 1.88-2.37 8.59 8.59 0 0 1-2.72 1.04A4.28 4.28 0 0 0 11.5 9.03c0 .34.04.67.1.99C7.72 9.86 4.1 8.13 1.67 5.15c-.37.63-.58 1.36-.58 2.14 0 1.48.75 2.78 1.9 3.54-.7-.02-1.36-.21-1.94-.53v.05c0 2.07 1.47 3.8 3.42 4.19-.36.1-.74.16-1.13.16-.28 0-.54-.03-.8-.08.54 1.7 2.12 2.94 3.99 2.97A8.6 8.6 0 0 1 2 19.54a12.13 12.13 0 0 0 6.56 1.92c7.88 0 12.2-6.53 12.2-12.2 0-.19 0-.37-.01-.56A8.7 8.7 0 0 0 24 4.59a8.48 8.48 0 0 1-2.54.7z"/></svg>
               </a>
-              <a href="#" className="text-gray-400 hover:text-leaf-dark">
-                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clipRule="evenodd"></path>
-                </svg>
+              <a href="#" aria-label="Instagram" className="text-gray-400 hover:text-[#4CAF50]">
+                <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zm4.25 3.25A5.25 5.25 0 1 1 6.75 12 5.25 5.25 0 0 1 12 6.75zm0 1.5A3.75 3.75 0 1 0 15.75 12 3.75 3.75 0 0 0 12 8.25zm5.5-.5a1 1 0 1 1-1 1 1 1 0 0 1 1-1z"/></svg>
               </a>
             </div>
           </div>
-          
+          {/* About */}
           <div>
-            <h3 className="font-bold text-gray-900 mb-4">About</h3>
-            <ul className="space-y-2">
-              <li><Link to="/about" className="text-gray-600 hover:text-leaf-dark">About GreenAlpha</Link></li>
-              <li><Link to="/team" className="text-gray-600 hover:text-leaf-dark">Our Team</Link></li>
-              <li><Link to="/mission" className="text-gray-600 hover:text-leaf-dark">Mission & Values</Link></li>
-              <li><Link to="/careers" className="text-gray-600 hover:text-leaf-dark">Careers</Link></li>
+            <div className="font-bold mb-4">About</div>
+            <ul className="space-y-2 text-gray-600">
+              <li><Link href="#">About GreenAlpha</Link></li>
+              <li><Link href="#">Our Team</Link></li>
+              <li><Link href="#">Mission & Values</Link></li>
+              <li><Link href="#">Careers</Link></li>
             </ul>
           </div>
-          
+          {/* Resources */}
           <div>
-            <h3 className="font-bold text-gray-900 mb-4">Resources</h3>
-            <ul className="space-y-2">
-              <li><Link to="/faq" className="text-gray-600 hover:text-leaf-dark">Investment FAQs</Link></li>
-              <li><Link to="/impact-reports" className="text-gray-600 hover:text-leaf-dark">Impact Reports</Link></li>
-              <li><Link to="/blog" className="text-gray-600 hover:text-leaf-dark">Blog</Link></li>
-              <li><Link to="/learn" className="text-gray-600 hover:text-leaf-dark">Learning Center</Link></li>
+            <div className="font-bold mb-4">Resources</div>
+            <ul className="space-y-2 text-gray-600">
+              <li><Link href="#">Investment FAQs</Link></li>
+              <li><Link href="#">Impact Reports</Link></li>
+              <li><Link href="#">Blog</Link></li>
+              <li><Link href="#">Learning Center</Link></li>
             </ul>
           </div>
-          
+          {/* Support */}
           <div>
-            <h3 className="font-bold text-gray-900 mb-4">Support</h3>
-            <ul className="space-y-2">
-              <li><Link to="/contact" className="text-gray-600 hover:text-leaf-dark">Contact Us</Link></li>
-              <li><Link to="/help" className="text-gray-600 hover:text-leaf-dark">Help Center</Link></li>
-              <li><Link to="/privacy" className="text-gray-600 hover:text-leaf-dark">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="text-gray-600 hover:text-leaf-dark">Terms of Service</Link></li>
+            <div className="font-bold mb-4">Support</div>
+            <ul className="space-y-2 text-gray-600">
+              <li><Link href="#">Contact Us</Link></li>
+              <li><Link href="#">Help Center</Link></li>
+              <li><Link href="#">Privacy Policy</Link></li>
+              <li><Link href="#">Terms of Service</Link></li>
             </ul>
           </div>
         </div>
-        
-        <div className="pt-8 border-t border-gray-200 text-center text-gray-500 text-sm">
-          <p>&copy; {new Date().getFullYear()} GreenAlpha. All rights reserved.</p>
-          <p className="mt-2">Empowering sustainable investments for a better future.</p>
+        <hr className="my-8 border-gray-200" />
+        <div className="text-center text-gray-500 text-sm space-y-2">
+          <div>© 2025 GreenAlpha. All rights reserved.</div>
+          <div>Empowering sustainable investments for a better future.</div>
         </div>
       </div>
     </footer>
-  );
+  )
 }
