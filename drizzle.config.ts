@@ -1,16 +1,19 @@
 // @ts-nocheck
 import type { Config } from "drizzle-kit";
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env.local
+dotenv.config({ path: '.env.local' });
+
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable is required');
+}
 
 export default {
   schema: "./src/db/schema.ts",
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
-    host: "localhost",
-    port: 5432,
-    database: "postgres",
-    user: "postgres",
-    password: "yourpassword",
-    ssl: false
+    connectionString: process.env.DATABASE_URL,
   }
 } satisfies Config;

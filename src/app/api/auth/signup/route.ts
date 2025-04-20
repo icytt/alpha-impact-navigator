@@ -1,97 +1,98 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import bcrypt from "bcrypt";
+import bcryptjs from "bcryptjs";
 
 export async function POST(request: Request) {
   try {
     console.log("Starting signup process...");
     
-    const { name, email, password } = await request.json();
-    console.log("Received signup data for:", email);
+    // Log request headers
+    const headers = Object.fromEntries(request.headers.entries());
+    console.log("Request headers:", headers);
+
+    const body = await request.json();
+    console.log("Request body:", { ...body, password: '[REDACTED]' });
+
+    const { name, email, password } = body;
 
     // Validate input
     if (!email || !password || !name) {
-      console.log("Missing required fields:", { email: !!email, password: !!password, name: !!name });
+      console.log("Missing required fields:", { 
+        hasEmail: !!email, 
+        hasPassword: !!password, 
+        hasName: !!name 
+      });
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
+    // Log database connection status
+    try {
+      await db.query.users.findFirst({
+        where: (users, { eq }) => eq(users.id, -1), // Test query
+      });
+      console.log("Database connection test successful");
+    } catch (dbTestError) {
+      console.error("Database connection test failed:", dbTestError);
+      throw dbTestError;
+    }
+
     // Check if user already exists
     console.log("Checking if user exists:", email);
-    try {
-      const existingUser = await db.query.users.findFirst({
-        where: (users, { eq }) => eq(users.email, email),
-      });
-      console.log("Existing user check result:", existingUser ? "Found" : "Not found");
+    const existingUser = await db.query.users.findFirst({
+      where: (users, { eq }) => eq(users.email, email),
+    });
 
-      if (existingUser) {
-        console.log("User already exists:", email);
-        return NextResponse.json(
-          { error: "User already exists" },
-          { status: 400 }
-        );
-      }
-    } catch (dbError) {
-      console.error("Database error during user check:", dbError);
-      throw dbError;
+    if (existingUser) {
+      console.log("User already exists:", email);
+      return NextResponse.json(
+        { error: "User already exists" },
+        { status: 400 }
+      );
     }
 
     // Hash password
     console.log("Hashing password...");
-    let hashedPassword;
-    try {
-      hashedPassword = await bcrypt.hash(password, 10);
-      console.log("Password hashed successfully");
-    } catch (hashError) {
-      console.error("Error hashing password:", hashError);
-      throw hashError;
-    }
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(password, salt);
+    console.log("Password hashed successfully");
 
     // Create user
-    console.log("Creating new user:", email);
-    try {
-      const [newUser] = await db.insert(users).values({
-        name,
-        email,
-        password: hashedPassword,
-      }).returning();
+    console.log("Attempting to create new user:", email);
+    const [newUser] = await db.insert(users).values({
+      name,
+      email,
+      password: hashedPassword,
+    }).returning();
 
-      console.log("User created successfully:", email);
-      return NextResponse.json(
-        { 
-          message: "User created successfully",
-          user: {
-            id: newUser.id,
-            name: newUser.name,
-            email: newUser.email,
-          }
-        },
-        { status: 201 }
-      );
-    } catch (insertError) {
-      console.error("Database error during user creation:", insertError);
-      throw insertError;
-    }
+    console.log("User created successfully:", { id: newUser.id, email: newUser.email });
+    return NextResponse.json(
+      { 
+        message: "User created successfully",
+        user: {
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+        }
+      },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error("Signup error details:", {
-      error: error instanceof Error ? error.message : "Unknown error",
-      stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : "Unknown error type"
-    });
+    console.error("Signup error:", error);
     
-    // Log any additional error properties
-    if (error instanceof Error) {
-      console.error("Additional error properties:", Object.keys(error));
-      if ('cause' in error) {
-        console.error("Error cause:", error.cause);
-      }
+    // Check if it's a database-related error
+    if (error instanceof Error && error.message.includes('database')) {
+      return NextResponse.json(
+        { error: "Database error occurred" },
+        { status: 500 }
+      );
     }
     
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Failed to create user" },
       { status: 500 }
     );
   }
