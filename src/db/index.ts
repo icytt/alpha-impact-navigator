@@ -16,9 +16,9 @@ const pool = new Pool({
 // Test database connection
 async function testConnection() {
   try {
-    const client = await pool.connect();
+    // Using query instead of connect as it's the proper way to test connection
+    await pool.query('SELECT 1');
     console.log('Connected to database successfully');
-    client.release();
   } catch (error) {
     console.error('Error connecting to the database:', error);
     throw error;
