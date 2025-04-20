@@ -6,6 +6,7 @@ import bcryptjs from "bcryptjs";
 export async function POST(request: Request) {
   try {
     console.log("Starting signup process...");
+    console.log("Database URL exists:", !!process.env.DATABASE_URL);
     
     // Log request headers
     const headers = Object.fromEntries(request.headers.entries());
@@ -31,13 +32,21 @@ export async function POST(request: Request) {
 
     // Log database connection status
     try {
+      console.log("Testing database connection...");
       await db.query.users.findFirst({
         where: (users, { eq }) => eq(users.id, -1), // Test query
       });
       console.log("Database connection test successful");
     } catch (dbTestError) {
-      console.error("Database connection test failed:", dbTestError);
-      throw dbTestError;
+      console.error("Database connection test failed:", {
+        error: dbTestError,
+        message: dbTestError instanceof Error ? dbTestError.message : "Unknown error",
+        stack: dbTestError instanceof Error ? dbTestError.stack : undefined
+      });
+      return NextResponse.json(
+        { error: "Database connection failed", details: dbTestError instanceof Error ? dbTestError.message : "Unknown error" },
+        { status: 500 }
+      );
     }
 
     // Check if user already exists
@@ -62,37 +71,45 @@ export async function POST(request: Request) {
 
     // Create user
     console.log("Attempting to create new user:", email);
-    const [newUser] = await db.insert(users).values({
-      name,
-      email,
-      password: hashedPassword,
-    }).returning();
+    try {
+      const [newUser] = await db.insert(users).values({
+        name,
+        email,
+        password: hashedPassword,
+      }).returning();
 
-    console.log("User created successfully:", { id: newUser.id, email: newUser.email });
-    return NextResponse.json(
-      { 
-        message: "User created successfully",
-        user: {
-          id: newUser.id,
-          name: newUser.name,
-          email: newUser.email,
-        }
-      },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error("Signup error:", error);
-    
-    // Check if it's a database-related error
-    if (error instanceof Error && error.message.includes('database')) {
+      console.log("User created successfully:", { id: newUser.id, email: newUser.email });
       return NextResponse.json(
-        { error: "Database error occurred" },
+        { 
+          message: "User created successfully",
+          user: {
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+          }
+        },
+        { status: 201 }
+      );
+    } catch (insertError) {
+      console.error("Failed to insert user:", {
+        error: insertError,
+        message: insertError instanceof Error ? insertError.message : "Unknown error",
+        stack: insertError instanceof Error ? insertError.stack : undefined
+      });
+      return NextResponse.json(
+        { error: "Failed to create user", details: insertError instanceof Error ? insertError.message : "Unknown error" },
         { status: 500 }
       );
     }
+  } catch (error) {
+    console.error("Signup error:", {
+      error,
+      message: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined
+    });
     
     return NextResponse.json(
-      { error: "Failed to create user" },
+      { error: "Failed to process signup request", details: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }

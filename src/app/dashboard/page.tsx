@@ -51,7 +51,7 @@ interface ImpactMetrics {
   governance: number;
   total: number;
   waterSaved: number;
-  treesPlanted: number;
+  habitatsPreserved: number;
   communityBeneficiaries: number;
 }
 
@@ -98,7 +98,7 @@ export default function DashboardPage() {
     governance: 0,
     total: 0,
     waterSaved: 0,
-    treesPlanted: 0,
+    habitatsPreserved: 0,
     communityBeneficiaries: 0
   });
   const [metrics, setMetrics] = useState<DashboardMetrics>({
@@ -143,7 +143,6 @@ export default function DashboardPage() {
   };
 
   const calculateImpactMetrics = (investments: UserInvestment[]) => {
-    // Keep the zero check for no investments
     if (!investments || investments.length === 0) {
       setImpactMetrics({
         environmental: 0,
@@ -151,7 +150,7 @@ export default function DashboardPage() {
         governance: 0,
         total: 0,
         waterSaved: 0,
-        treesPlanted: 0,
+        habitatsPreserved: 0,
         communityBeneficiaries: 0
       });
       setMetrics({
@@ -167,39 +166,45 @@ export default function DashboardPage() {
 
     const totalValue = investments.reduce((sum, inv) => sum + Number(inv.amount), 0);
     
-    // Reduce base impact calculation
     const metrics = investments.reduce((acc, inv) => {
       const amount = Number(inv.amount);
-      // Reduce base impact
-      const baseImpact = Math.max(10, Math.log10(amount + 1) * 6); // Reduced from 8 to 6
+      const baseImpact = Math.max(10, Math.log10(amount + 1) * 6);
       
+      // Average cost to preserve one acre of habitat: $5000
+      // Different multipliers based on investment category
       switch(inv.investment.category.toLowerCase()) {
         case 'renewable energy':
-          acc.environmental += baseImpact * 1.2; // Reduced from 1.5
-          acc.social += baseImpact * 0.5; // Reduced from 0.6
-          acc.governance += baseImpact * 0.3; // Reduced from 0.4
-          acc.waterSaved += amount * 0.03; // Reduced from 0.05
-          acc.treesPlanted += Math.floor(amount * 0.01); // Reduced from 0.02
+          acc.environmental += baseImpact * 1.2;
+          acc.social += baseImpact * 0.5;
+          acc.governance += baseImpact * 0.3;
+          acc.waterSaved += amount * 0.03;
+          // Renewable energy projects indirectly preserve habitats through reduced land use
+          acc.habitatsPreserved += (amount * 0.0001); // 0.0001 acres per dollar (indirect preservation)
           break;
         case 'food & agriculture':
-          acc.environmental += baseImpact * 0.6; // Reduced from 0.8
-          acc.social += baseImpact * 1.2; // Reduced from 1.5
-          acc.governance += baseImpact * 0.3; // Reduced from 0.4
-          acc.waterSaved += amount * 0.04; // Reduced from 0.06
-          acc.communityBeneficiaries += Math.floor(amount * 0.02); // Reduced from 0.03
+          acc.environmental += baseImpact * 0.6;
+          acc.social += baseImpact * 1.2;
+          acc.governance += baseImpact * 0.3;
+          acc.waterSaved += amount * 0.04;
+          // Sustainable agriculture has a direct impact on habitat preservation
+          acc.habitatsPreserved += (amount * 0.0003); // 0.0003 acres per dollar (direct preservation)
+          acc.communityBeneficiaries += Math.floor(amount * 0.02);
           break;
         case 'water technology':
-          acc.environmental += baseImpact * 1.0; // Reduced from 1.2
-          acc.social += baseImpact * 0.6; // Reduced from 0.8
-          acc.governance += baseImpact * 0.4; // Reduced from 0.6
-          acc.waterSaved += amount * 0.05; // Reduced from 0.08
-          acc.communityBeneficiaries += Math.floor(amount * 0.01); // Reduced from 0.02
+          acc.environmental += baseImpact * 1.0;
+          acc.social += baseImpact * 0.6;
+          acc.governance += baseImpact * 0.4;
+          acc.waterSaved += amount * 0.05;
+          // Water technology helps preserve aquatic and surrounding habitats
+          acc.habitatsPreserved += (amount * 0.0002); // 0.0002 acres per dollar (water-related preservation)
+          acc.communityBeneficiaries += Math.floor(amount * 0.01);
           break;
         default:
           const evenImpact = baseImpact / 3;
           acc.environmental += evenImpact;
           acc.social += evenImpact;
           acc.governance += evenImpact;
+          acc.habitatsPreserved += (amount * 0.0001); // Default preservation rate
       }
       return acc;
     }, {
@@ -207,7 +212,7 @@ export default function DashboardPage() {
       social: 0,
       governance: 0,
       waterSaved: 0,
-      treesPlanted: 0,
+      habitatsPreserved: 0,
       communityBeneficiaries: 0
     });
 
@@ -473,9 +478,9 @@ export default function DashboardPage() {
             {/* Additional Impact Stats */}
             <div className="grid grid-cols-2 gap-4 mt-6">
               <div className="bg-gray-50 rounded-lg p-3">
-                <span className="text-sm text-gray-600 block">Trees Planted</span>
+                <span className="text-sm text-gray-600 block">Habitats Preserved</span>
                 <span className="text-xl font-semibold text-green-600">
-                  {Math.round(impactMetrics.treesPlanted).toLocaleString()}
+                  {impactMetrics.habitatsPreserved.toFixed(2)} acres
                 </span>
               </div>
               <div className="bg-gray-50 rounded-lg p-3">
